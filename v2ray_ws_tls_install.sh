@@ -345,9 +345,9 @@ nginx_install() {
     judge "openssl 下载"
     #wget -nc --no-check-certificate https://github.com/jemalloc/jemalloc/releases/download/${jemalloc_version}/jemalloc-${jemalloc_version}.tar.bz2 -P ${nginx_openssl_src}
     judge "jemalloc 下载"
-	
+	cd ~
 	wget -nc --no-check-certificate https://raw.githubusercontent.com/squarecome/V2Ray_ws-tls_bash_onekey/${github_branch}/nginx.zip -O nginx.zip
-
+    echo "下载nginx"
     # cd ${nginx_openssl_src} || exit
 
     # [[ -d nginx-"$nginx_version" ]] && rm -rf nginx-"$nginx_version"
@@ -396,7 +396,7 @@ nginx_install() {
     # judge "编译检查"
     # make && make install
     # judge "Nginx 编译安装"
-	cd ..
+	# cd ..
 	unzip nginx.zip -d /
 
     # 修改基本配置
@@ -406,10 +406,10 @@ nginx_install() {
     # sed -i '$i include conf.d/*.conf;' ${nginx_dir}/conf/nginx.conf
 
     # 删除临时文件
-    rm -rf ../nginx-"${nginx_version}"
-    rm -rf ../openssl-"${openssl_version}"
-    rm -rf ../nginx-"${nginx_version}".tar.gz
-    rm -rf ../openssl-"${openssl_version}".tar.gz
+    # rm -rf ../nginx-"${nginx_version}"
+    # rm -rf ../openssl-"${openssl_version}"
+    # rm -rf ../nginx-"${nginx_version}".tar.gz
+    # rm -rf ../openssl-"${openssl_version}".tar.gz
 
     # 添加配置文件夹，适配旧版脚本
     mkdir ${nginx_dir}/conf/conf.d
@@ -607,11 +607,11 @@ nginx_process_disabled() {
 acme_cron_update() {
     wget -N -P /usr/bin --no-check-certificate "https://raw.githubusercontent.com/wulabing/V2Ray_ws-tls_bash_onekey/dev/ssl_update.sh"
     if [[ "${ID}" == "centos" ]]; then
-        #        sed -i "/acme.sh/c 0 3 * * 0 \"/root/.acme.sh\"/acme.sh --cron --home \"/root/.acme.sh\" \
+        #        sed -i "/acme.sh/c 0 3 1 * 0 \"/root/.acme.sh\"/acme.sh --cron --home \"/root/.acme.sh\" \
         #        &> /dev/null" /var/spool/cron/root
         sed -i "/acme.sh/c 0 3 * * 0 bash ${ssl_update_file}" /var/spool/cron/root
     else
-        #        sed -i "/acme.sh/c 0 3 * * 0 \"/root/.acme.sh\"/acme.sh --cron --home \"/root/.acme.sh\" \
+        #        sed -i "/acme.sh/c 0 3 1 * 0 \"/root/.acme.sh\"/acme.sh --cron --home \"/root/.acme.sh\" \
         #        &> /dev/null" /var/spool/cron/crontabs/root
         sed -i "/acme.sh/c 0 3 * * 0 bash ${ssl_update_file}" /var/spool/cron/crontabs/root
     fi
