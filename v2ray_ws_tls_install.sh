@@ -338,45 +338,49 @@ nginx_install() {
     #    if [[ -d "/etc/nginx" ]];then
     #        rm -rf /etc/nginx
     #    fi
-
-	wget --no-check-certificate https://raw.githubusercontent.com/squarecome/V2Ray_ws-tls_bash_onekey/${github_branch}/nginx.zip -O nginx.zip
-    #wget -nc --no-check-certificate http://nginx.org/download/nginx-${nginx_version}.tar.gz -P ${nginx_openssl_src}
+	echo "开始Nginx 下载 https://raw.githubusercontent.com/squarecome/V2Ray_ws-tls_bash_onekey/${github_branch}/nginx.zip"
+    # wget -nc --no-check-certificate http://nginx.org/download/nginx-${nginx_version}.tar.gz -P ${nginx_openssl_src}
     judge "Nginx 下载"
-    wget -nc --no-check-certificate https://www.openssl.org/source/openssl-${openssl_version}.tar.gz -P ${nginx_openssl_src}
+    #wget -nc --no-check-certificate https://www.openssl.org/source/openssl-${openssl_version}.tar.gz -P ${nginx_openssl_src}
     judge "openssl 下载"
-    wget -nc --no-check-certificate https://github.com/jemalloc/jemalloc/releases/download/${jemalloc_version}/jemalloc-${jemalloc_version}.tar.bz2 -P ${nginx_openssl_src}
+    #wget -nc --no-check-certificate https://github.com/jemalloc/jemalloc/releases/download/${jemalloc_version}/jemalloc-${jemalloc_version}.tar.bz2 -P ${nginx_openssl_src}
     judge "jemalloc 下载"
+	
+	wget -nc --no-check-certificate https://raw.githubusercontent.com/squarecome/V2Ray_ws-tls_bash_onekey/${github_branch}/nginx.zip -O nginx.zip
 
-    cd ${nginx_openssl_src} || exit
+    # cd ${nginx_openssl_src} || exit
 
-    #[[ -d nginx-"$nginx_version" ]] && rm -rf nginx-"$nginx_version"
-    #tar -zxvf nginx-"$nginx_version".tar.gz
+    # [[ -d nginx-"$nginx_version" ]] && rm -rf nginx-"$nginx_version"
+    # tar -zxvf nginx-"$nginx_version".tar.gz
 
-    [[ -d openssl-"$openssl_version" ]] && rm -rf openssl-"$openssl_version"
-    tar -zxvf openssl-"$openssl_version".tar.gz
+    # [[ -d openssl-"$openssl_version" ]] && rm -rf openssl-"$openssl_version"
+    # tar -zxvf openssl-"$openssl_version".tar.gz
 
-    [[ -d jemalloc-"${jemalloc_version}" ]] && rm -rf jemalloc-"${jemalloc_version}"
-    tar -xvf jemalloc-"${jemalloc_version}".tar.bz2
+    # [[ -d jemalloc-"${jemalloc_version}" ]] && rm -rf jemalloc-"${jemalloc_version}"
+    # tar -xvf jemalloc-"${jemalloc_version}".tar.bz2
 
-    [[ -d "$nginx_dir" ]] && rm -rf ${nginx_dir}
+    # [[ -d "$nginx_dir" ]] && rm -rf ${nginx_dir}
 
-    echo -e "${OK} ${GreenBG} 即将开始编译安装 jemalloc ${Font}"
-    sleep 2
+    # echo -e "${OK} ${GreenBG} 即将开始编译安装 jemalloc ${Font}"
+    # sleep 2
 
-    cd jemalloc-${jemalloc_version} || exit
-    ./configure
-    judge "编译检查"
-    make && make install
-    judge "jemalloc 编译安装"
-    echo '/usr/local/lib' >/etc/ld.so.conf.d/local.conf
+    # cd jemalloc-${jemalloc_version} || exit
+    # ./configure --prefix=/usr/local/jemalloc
+    # judge "编译检查"
+    # make && make install
+    wget -nc --no-check-certificate https://raw.githubusercontent.com/squarecome/V2Ray_ws-tls_bash_onekey/${github_branch}/jemalloc_so.zip -O jemalloc.zip
+	#judge "jemalloc 编译安装"
+	echo "下载jemalloc"
+	unzip jemalloc.zip -d /
+    echo '/usr/local/jemalloc/lib' >/etc/ld.so.conf.d/local.conf
     ldconfig
 
     echo -e "${OK} ${GreenBG} 即将开始编译安装 Nginx, 过程稍久，请耐心等待 ${Font}"
-    sleep 4
+    sleep 1
 
-    #cd ../nginx-${nginx_version} || exit
+    # cd ../nginx-${nginx_version} || exit
 
-    #./configure --prefix="${nginx_dir}" \
+    # ./configure --prefix="${nginx_dir}" \
     #    --with-http_ssl_module \
     #    --with-http_gzip_static_module \
     #    --with-http_stub_status_module \
@@ -389,17 +393,17 @@ nginx_install() {
     #    --with-cc-opt='-O3' \
     #    --with-ld-opt="-ljemalloc" \
     #    --with-openssl=../openssl-"$openssl_version"
-    #judge "编译检查"
-    #make && make install
-    #judge "Nginx 编译安装"
+    # judge "编译检查"
+    # make && make install
+    # judge "Nginx 编译安装"
 	cd ..
-	unzip nginx.zip -d / 
+	unzip nginx.zip -d /
 
     # 修改基本配置
-    #sed -i 's/#user  nobody;/user  root;/' ${nginx_dir}/conf/nginx.conf
-    #sed -i 's/worker_processes  1;/worker_processes  3;/' ${nginx_dir}/conf/nginx.conf
-    #sed -i 's/    worker_connections  1024;/    worker_connections  4096;/' ${nginx_dir}/conf/nginx.conf
-    #sed -i '$i include conf.d/*.conf;' ${nginx_dir}/conf/nginx.conf
+    # sed -i 's/#user  nobody;/user  root;/' ${nginx_dir}/conf/nginx.conf
+    # sed -i 's/worker_processes  1;/worker_processes  3;/' ${nginx_dir}/conf/nginx.conf
+    # sed -i 's/    worker_connections  1024;/    worker_connections  4096;/' ${nginx_dir}/conf/nginx.conf
+    # sed -i '$i include conf.d/*.conf;' ${nginx_dir}/conf/nginx.conf
 
     # 删除临时文件
     rm -rf ../nginx-"${nginx_version}"
@@ -860,7 +864,7 @@ install_v2_h2() {
 
 }
 update_sh() {
-    ol_version=$(curl -L -s https://raw.githubusercontent.com/wulabing/V2Ray_ws-tls_bash_onekey/${github_branch}/install.sh | grep "shell_version=" | head -1 | awk -F '=|"' '{print $3}')
+    ol_version=$(curl -L -s https://raw.githubusercontent.com/squarecome/V2Ray_ws-tls_bash_onekey/${github_branch}/v2ray_ws_tls_install.sh | grep "shell_version=" | head -1 | awk -F '=|"' '{print $3}')
     echo "$ol_version" >$version_cmp
     echo "$shell_version" >>$version_cmp
     if [[ "$shell_version" < "$(sort -rV $version_cmp | head -1)" ]]; then
@@ -868,7 +872,7 @@ update_sh() {
         read -r update_confirm
         case $update_confirm in
         [yY][eE][sS] | [yY])
-            wget -N --no-check-certificate https://raw.githubusercontent.com/wulabing/V2Ray_ws-tls_bash_onekey/${github_branch}/install.sh
+            wget -N --no-check-certificate https://raw.githubusercontent.com/squarecome/V2Ray_ws-tls_bash_onekey/${github_branch}/v2ray_ws_tls_install.sh
             echo -e "${OK} ${GreenBG} 更新完成 ${Font}"
             exit 0
             ;;
